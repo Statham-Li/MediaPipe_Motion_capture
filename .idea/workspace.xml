@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df397009-f6d2-4338-ac79-91d422f9060e" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run.mp4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MediaPipe_Motion_capture/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MediaPipe_Motion_capture/run.mp4" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
