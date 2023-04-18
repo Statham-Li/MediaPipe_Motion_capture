@@ -79,7 +79,7 @@ def main():
     use_brect = args.use_brect
     plot_world_landmark = args.plot_world_landmark
 
-    cap = cv.VideoCapture('./run.mp4')
+    cap = cv.VideoCapture('./src/run.mp4')
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
 
