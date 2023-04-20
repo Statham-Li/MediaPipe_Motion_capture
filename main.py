@@ -53,7 +53,7 @@ def get_args():
                         default=0.5)
 
     parser.add_argument('--use_brect', action='store_true')
-    parser.add_argument('--plot_world_landmark', action='store_true')
+    parser.add_argument('--plot_world_landmark', action='store_true', default=True)
 
     args = parser.parse_args()
 
@@ -79,7 +79,7 @@ def main():
     use_brect = args.use_brect
     plot_world_landmark = args.plot_world_landmark
 
-    cap = cv.VideoCapture('./src/run.mp4')
+    cap = cv.VideoCapture('./src/dance.mp4')
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
 
@@ -166,7 +166,6 @@ def calc_bounding_rect(image, landmarks):
         landmark_array = np.append(landmark_array, landmark_point, axis=0)
 
     x, y, w, h = cv.boundingRect(landmark_array)
-    print(x, y, x + w, y + h)
     return [x, y, x + w, y + h]
 
 
@@ -258,7 +257,7 @@ def draw_landmarks(
 
         # if not upper_body_only:
         if True:
-            cv.putText(image, str(index) + "z:" + str(round(landmark_z, 3)),
+            cv.putText(image, str(index), # + "z:" + str(round(landmark_z, 3))
                        (landmark_x - 10, landmark_y - 10),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 97, 255), 1,
                        cv.LINE_AA)
@@ -405,6 +404,7 @@ def draw_landmarks(
     return image
 
 
+# 3D坐标
 def plot_world_landmarks(
         plt,
         ax,
