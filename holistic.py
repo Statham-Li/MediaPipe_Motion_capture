@@ -12,6 +12,8 @@ import mediapipe as mp
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 
+Z_PEAKS=[]
+shoulder_axisZ = []
 def test():
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -55,8 +57,8 @@ def test():
             # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
             # mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
 
-            # cv.imshow('MediaPipe Holistic', cv.flip(image, 1))
-            cv.imshow('MediaPipe Holistic', image)
+            cv.imshow('MediaPipe Holistic', cv.flip(image, 1))
+            # cv.imshow('MediaPipe Holistic', image)
             if cv.waitKey(5) & 0xFF == 27:
                 break
 
@@ -69,7 +71,6 @@ def plot_world_landmarks(
         visibility_th=0.5,
 ):
     landmark_point = []
-
     for index, landmark in enumerate(landmarks.landmark):
         landmark_point.append(
             [landmark.visibility, (landmark.x, landmark.y, landmark.z)])
@@ -80,6 +81,9 @@ def plot_world_landmarks(
     left_body_side_index_list = [12, 24, 26, 28, 30, 32]
     shoulder_index_list = [11, 12]
     waist_index_list = [23, 24]
+    # 重心模拟
+    center_of_mass = [11, 12, 25, 26]
+    knee = [26]
 
     # 面部
     face_x, face_y, face_z = [], [], []
@@ -139,6 +143,18 @@ def plot_world_landmarks(
         waist_y.append(point[2])
         waist_z.append(point[1] * (-1))
 
+    # 重心
+    Cal_COM_x, Cal_COM_y, Cal_COM_z = [], [], []
+    for index in center_of_mass:
+        point = landmark_point[index][1]
+        Cal_COM_x.append(point[0])
+        Cal_COM_y.append(point[2])
+        Cal_COM_z.append(point[1]*(-1))
+    COM_x = sum(Cal_COM_x) / 4
+    COM_y = sum(Cal_COM_y) / 4
+    # COM_z = sum(Cal_COM_z) / 4
+
+    shoulder_axisZ.append(shoulder_z[0])
     ax.cla()
     ax.set_xlabel("X Axis")
     ax.set_ylabel("Y Axis")
@@ -150,16 +166,18 @@ def plot_world_landmarks(
     # Mediapipe坐标和matplotlib y z轴相反，且z(mat)需×-1
     ax.scatter(face_x, face_y, face_z)
     ax.scatter(0, 0, 0)
+    ax.scatter(COM_x, COM_y, 0)
     ax.plot(right_arm_x, right_arm_y, right_arm_z)
     ax.plot(left_arm_x, left_arm_y, left_arm_z)
     ax.plot(right_body_side_x, right_body_side_y, right_body_side_z)
     ax.plot(left_body_side_x, left_body_side_y, left_body_side_z)
     ax.plot(shoulder_x, shoulder_y, shoulder_z)
     ax.plot(waist_x, waist_y, waist_z)
-
-    print(shoulder_z[0])
+    ax.scatter(landmark_point[26][1][0], landmark_point[26][1][2], landmark_point[26][1][1]*(-1))
     plt.pause(.001)
 
     return
+
+# def axisFilter(axis):
 
 test()

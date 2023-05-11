@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="df397009-f6d2-4338-ac79-91d422f9060e" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/src/squat.mp4" afterDir="false" />
+    <list default="true" id="df397009-f6d2-4338-ac79-91d422f9060e" name="变更" comment="变更">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/holistic.py" beforeDir="false" afterPath="$PROJECT_DIR$/holistic.py" afterDir="false" />
     </list>
@@ -115,5 +114,16 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
