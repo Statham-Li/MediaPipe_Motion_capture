@@ -8,12 +8,17 @@ import argparse
 
 import cv2 as cv
 import numpy as np
+import math
 import mediapipe as mp
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 
-Z_PEAKS=[]
+# Z_PEAKS=[]
 shoulder_axisZ = []
+RKnee_axisZ = []
+fps = 30
+m = 67
+v_linear = []  #用于存放所有点位速度
 def test():
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -23,7 +28,7 @@ def test():
     # ax = fig.add_subplot(111, projection="3d")
     ax = plt.axes(projection='3d')
     fig.subplots_adjust(left=0.0, right=1, bottom=0, top=1)
-    cap = cv.VideoCapture('./src/squat.mp4')
+    cap = cv.VideoCapture('./src/cxj.mp4')
     with mp_holistic.Holistic(
             smooth_landmarks=True,
             min_detection_confidence=0.5,
@@ -61,8 +66,9 @@ def test():
             # cv.imshow('MediaPipe Holistic', image)
             if cv.waitKey(5) & 0xFF == 27:
                 break
-
+        # 不关闭窗口
         cap.release()
+        plt.close()
         cv.destroyAllWindows()
 def plot_world_landmarks(
         plt,
@@ -155,6 +161,7 @@ def plot_world_landmarks(
     # COM_z = sum(Cal_COM_z) / 4
 
     shoulder_axisZ.append(shoulder_z[0])
+    RKnee_axisZ.append(landmark_point[26][1][1]*(-1))
     ax.cla()
     ax.set_xlabel("X Axis")
     ax.set_ylabel("Y Axis")
@@ -178,6 +185,46 @@ def plot_world_landmarks(
 
     return
 
-# def axisFilter(axis):
-
+def axisFilter(axis):
+    peaks_and_valleys = [] # 波峰波谷
+    fps_num = [] # 帧数
+    cal_V_list = [] # 波峰波谷＋相邻坐标
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection="3d")
+    # figure_ax = fig.add_subplot(1, 1, 1)
+    for index,item in enumerate(axis):
+        if index == 0 or index == len(axis) - 1:
+            continue
+        if (item > axis[index-1] and item > axis[index+1]) or (item < axis[index-1] and item < axis[index+1]):
+            peaks_and_valleys.append(item)
+            fps_num.append(index)
+            cal_V_list.append([axis[index-1], item, axis[index+1]])
+    print(peaks_and_valleys, cal_V_list)
+    wattCalculate(cal_V_list, peaks_and_valleys)
+    plt.plot(fps_num, peaks_and_valleys)
+    plt.show()
+def wattCalculate(v_list, axis_list):
+    trans_H = 0
+    trans_Vf = 0
+    v_res = []
+    for index, item in enumerate(v_list):
+        v = abs(abs(item[2] - item[1])-abs(item[1] - item[0]))*4.31 / (2 / fps)  #  4.31待定
+        v_res.append(v)
+        # if index != len(v_list) - 1:
+        #     trans_Vf += abs(math.pow(item[1], 2) - math.pow(v_list[index+1][1], 2))
+    for i, v in enumerate(v_res):
+        if i != len(v_res) - 1:
+            trans_Vf += abs(math.pow(v, 2) - math.pow(v_res[i+1], 2))
+    for i, axis in enumerate(axis_list):
+        if i != len(axis_list) - 1:
+            trans_H += abs(axis - axis_list[i+1])
+    # 势能
+    Ep = m * 9.8 * trans_H * 4.31  # 4.31待定
+    # 动能
+    Ek = m * trans_Vf / 2
+    # 总功
+    E = Ep + Ek
+    print(Ep, Ek, E, trans_H, trans_Vf)
+    # W = 9.8 * sum(axis_list) + m * sum(np.square(v_linear)) / 2
 test()
+axisFilter(shoulder_axisZ)

@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df397009-f6d2-4338-ac79-91d422f9060e" name="变更" comment="变更">
+      <change afterPath="$PROJECT_DIR$/src/cxj.mp4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/holistic.py" beforeDir="false" afterPath="$PROJECT_DIR$/holistic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dance.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/run.mp4" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +49,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$" />
     </key>
