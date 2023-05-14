@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt
 
 # Z_PEAKS=[]
 shoulder_axisZ = []
-RKnee_axisZ = []
+Rheel_axisZ = [] #  全部
+heel_list = [] # 峰值
 fps = 30
 m = 67
 v_linear = []  #用于存放所有点位速度
@@ -161,7 +162,7 @@ def plot_world_landmarks(
     # COM_z = sum(Cal_COM_z) / 4
 
     shoulder_axisZ.append(shoulder_z[0])
-    RKnee_axisZ.append(landmark_point[26][1][1]*(-1))
+    Rheel_axisZ.append(landmark_point[30][1][1]*(-1))
     ax.cla()
     ax.set_xlabel("X Axis")
     ax.set_ylabel("Y Axis")
@@ -189,6 +190,7 @@ def axisFilter(axis):
     peaks_and_valleys = [] # 波峰波谷
     fps_num = [] # 帧数
     cal_V_list = [] # 波峰波谷＋相邻坐标
+    cal_V_list_heel = [] # 脚后跟波峰波谷＋相邻坐标
     # fig = plt.figure()
     # ax = fig.add_subplot(111, projection="3d")
     # figure_ax = fig.add_subplot(1, 1, 1)
@@ -197,18 +199,26 @@ def axisFilter(axis):
             continue
         if (item > axis[index-1] and item > axis[index+1]) or (item < axis[index-1] and item < axis[index+1]):
             peaks_and_valleys.append(item)
+            heel_list.append(Rheel_axisZ[index])
             fps_num.append(index)
             cal_V_list.append([axis[index-1], item, axis[index+1]])
-    print(peaks_and_valleys, cal_V_list)
-    wattCalculate(cal_V_list, peaks_and_valleys)
-    plt.plot(fps_num, peaks_and_valleys)
+            cal_V_list_heel.append([Rheel_axisZ[index-1], Rheel_axisZ[index], Rheel_axisZ[index+1]])
+    print(cal_V_list_heel)#peaks_and_valleys, cal_V_list)
+    # wattCalculate(cal_V_list, peaks_and_valleys)
+    wattCalculate(cal_V_list_heel, heel_list)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.set_title('Right Shoulder/heel ZAxis')
+    ax.plot(fps_num, peaks_and_valleys, label="Rshoulder_ZAxis")
+    ax.plot(fps_num, heel_list,  label="Rheel_ZAxis")
+    ax.legend(loc='best')
     plt.show()
 def wattCalculate(v_list, axis_list):
     trans_H = 0
     trans_Vf = 0
     v_res = []
     for index, item in enumerate(v_list):
-        v = abs(abs(item[2] - item[1])-abs(item[1] - item[0]))*4.31 / (2 / fps)  #  4.31待定
+        v = abs(abs(item[2] - item[1])-abs(item[1] - item[0])) / (2 / fps)  #  7.05待定
         v_res.append(v)
         # if index != len(v_list) - 1:
         #     trans_Vf += abs(math.pow(item[1], 2) - math.pow(v_list[index+1][1], 2))
@@ -219,7 +229,7 @@ def wattCalculate(v_list, axis_list):
         if i != len(axis_list) - 1:
             trans_H += abs(axis - axis_list[i+1])
     # 势能
-    Ep = m * 9.8 * trans_H * 4.31  # 4.31待定
+    Ep = m * 9.8 * trans_H  # 7.05待定
     # 动能
     Ek = m * trans_Vf / 2
     # 总功
