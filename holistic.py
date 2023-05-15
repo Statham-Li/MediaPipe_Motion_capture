@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 # Z_PEAKS=[]
 shoulder_axisZ = []
 Rheel_axisZ = [] #  全部
-heel_list = [] # 峰值
+shoulder_list = [] # 峰值
 fps = 30
 m = 67
 v_linear = []  #用于存放所有点位速度
@@ -187,31 +187,39 @@ def plot_world_landmarks(
     return
 
 def axisFilter(axis):
-    peaks_and_valleys = [] # 波峰波谷
+    peaks_and_valleys = [] # 波峰波谷（脚后跟）
     fps_num = [] # 帧数
     cal_V_list = [] # 波峰波谷＋相邻坐标
-    cal_V_list_heel = [] # 脚后跟波峰波谷＋相邻坐标
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection="3d")
-    # figure_ax = fig.add_subplot(1, 1, 1)
+    cal_V_list_shoulder = [] # 右肩波峰波谷＋相邻坐标
     for index,item in enumerate(axis):
         if index == 0 or index == len(axis) - 1:
             continue
         if (item > axis[index-1] and item > axis[index+1]) or (item < axis[index-1] and item < axis[index+1]):
             peaks_and_valleys.append(item)
-            heel_list.append(Rheel_axisZ[index])
+            shoulder_list.append(shoulder_axisZ[index])
             fps_num.append(index)
             cal_V_list.append([axis[index-1], item, axis[index+1]])
-            cal_V_list_heel.append([Rheel_axisZ[index-1], Rheel_axisZ[index], Rheel_axisZ[index+1]])
-    print(cal_V_list_heel)#peaks_and_valleys, cal_V_list)
-    # wattCalculate(cal_V_list, peaks_and_valleys)
-    wattCalculate(cal_V_list_heel, heel_list)
+            cal_V_list_shoulder.append([shoulder_axisZ[index-1], shoulder_axisZ[index], shoulder_axisZ[index+1]])
+    # print(cal_V_list_shoulder)#peaks_and_valleys, cal_V_list)
+    v_res = wattCalculate(cal_V_list, peaks_and_valleys)
+    # v_res = wattCalculate(cal_V_list_shoulder, shoulder_list)
     fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    ax.set_title('Right Shoulder/heel ZAxis')
-    ax.plot(fps_num, peaks_and_valleys, label="Rshoulder_ZAxis")
-    ax.plot(fps_num, heel_list,  label="Rheel_ZAxis")
-    ax.legend(loc='best')
+    ax1 = fig.add_subplot(1, 2, 1)
+    ax2 = fig.add_subplot(1, 2, 2)
+    ax1.set_title('Right Shoulder/heel ZAxis')
+    ax1.plot(fps_num, peaks_and_valleys, label="Rheel_ZAxis")
+    ax1.plot(fps_num, shoulder_list, label="Rshoulder_ZAxis")
+    ax1.set_xlabel('Fps')
+    ax1.set_ylabel('Z_Axis')
+    ax1.legend(loc='best')
+    ax2.plot(fps_num, v_res, label="v")
+    ax2.set_xlabel('Fps')
+    ax2.set_ylabel('V(m/s)')
+    ax3 = ax2.twinx()
+    ax3.plot(fps_num, peaks_and_valleys, color='green', label='Z_Axis')
+    # ax3.set_ylabel("v_heel")
+    ax2.legend(loc='upper left')
+    ax3.legend(loc='upper right')
     plt.show()
 def wattCalculate(v_list, axis_list):
     trans_H = 0
@@ -219,6 +227,7 @@ def wattCalculate(v_list, axis_list):
     v_res = []
     for index, item in enumerate(v_list):
         v = abs(abs(item[2] - item[1])-abs(item[1] - item[0])) / (2 / fps)  #  7.05待定
+        print(v)
         v_res.append(v)
         # if index != len(v_list) - 1:
         #     trans_Vf += abs(math.pow(item[1], 2) - math.pow(v_list[index+1][1], 2))
@@ -232,9 +241,10 @@ def wattCalculate(v_list, axis_list):
     Ep = m * 9.8 * trans_H  # 7.05待定
     # 动能
     Ek = m * trans_Vf / 2
-    # 总功
+    # 总
     E = Ep + Ek
     print(Ep, Ek, E, trans_H, trans_Vf)
+    return v_res
     # W = 9.8 * sum(axis_list) + m * sum(np.square(v_linear)) / 2
 test()
-axisFilter(shoulder_axisZ)
+axisFilter(Rheel_axisZ)
