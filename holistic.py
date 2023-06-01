@@ -51,6 +51,7 @@ def test():
                 plt,
                 ax,
                 results.pose_world_landmarks,
+                # False
             )
             # 画图
             image.flags.writeable = True
@@ -77,7 +78,7 @@ def plot_world_landmarks(
         plt,
         ax,
         landmarks,
-        visibility_th=0.5,
+        visibility = True,
 ):
     landmark_point = []
     global standard
@@ -172,26 +173,27 @@ def plot_world_landmarks(
 
     shoulder_axisZ.append(shoulder_z[0])
     Rheel_axisZ.append(landmark_point[30][1][1]*(-1))
-    ax.cla()
-    ax.set_xlabel("X Axis")
-    ax.set_ylabel("Y Axis")
-    ax.set_zlabel("Z Axis")
-    ax.set_xlim3d(-1, 1)
-    ax.set_ylim3d(-1, 1)
-    ax.set_zlim3d(-1, 1)
-    ax.invert_yaxis()
-    # Mediapipe坐标和matplotlib y z轴相反，且z(mat)需×-1
-    ax.scatter(face_x, face_y, face_z)
-    # ax.scatter(0, 0, 0)
-    # ax.scatter(COM_x, COM_y, 0)
-    ax.plot(right_arm_x, right_arm_y, right_arm_z)
-    ax.plot(left_arm_x, left_arm_y, left_arm_z)
-    ax.plot(right_body_side_x, right_body_side_y, right_body_side_z)
-    ax.plot(left_body_side_x, left_body_side_y, left_body_side_z)
-    ax.plot(shoulder_x, shoulder_y, shoulder_z)
-    ax.plot(waist_x, waist_y, waist_z)
-    # ax.scatter(landmark_point[26][1][0], landmark_point[26][1][2], landmark_point[26][1][1]*(-1))
-    plt.pause(.001)
+    if visibility:
+        ax.cla()
+        ax.set_xlabel("X Axis")
+        ax.set_ylabel("Y Axis")
+        ax.set_zlabel("Z Axis")
+        ax.set_xlim3d(-1, 1)
+        ax.set_ylim3d(-1, 1)
+        ax.set_zlim3d(-1, 1)
+        ax.invert_yaxis()
+        # Mediapipe坐标和matplotlib y z轴相反，且z(mat)需×-1
+        ax.scatter(face_x, face_y, face_z)
+        # ax.scatter(0, 0, 0)
+        # ax.scatter(COM_x, COM_y, 0)
+        ax.plot(right_arm_x, right_arm_y, right_arm_z)
+        ax.plot(left_arm_x, left_arm_y, left_arm_z)
+        ax.plot(right_body_side_x, right_body_side_y, right_body_side_z)
+        ax.plot(left_body_side_x, left_body_side_y, left_body_side_z)
+        ax.plot(shoulder_x, shoulder_y, shoulder_z)
+        ax.plot(waist_x, waist_y, waist_z)
+        # ax.scatter(landmark_point[26][1][0], landmark_point[26][1][2], landmark_point[26][1][1]*(-1))
+        plt.pause(.001)
 
     return
 
