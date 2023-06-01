@@ -20,6 +20,8 @@ shoulder_list = [] # 峰值
 fps = 30
 m = 67
 v_linear = []  #用于存放所有点位速度
+flag = 0
+standard = 0
 def test():
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -78,9 +80,17 @@ def plot_world_landmarks(
         visibility_th=0.5,
 ):
     landmark_point = []
+    global standard
+    global flag  # 记录标准锁
+    for index, landmark in enumerate(landmarks.landmark):
+        if not flag and index == 30:
+            standard = [landmark.visibility, (
+            float(format(landmark.x, '.5f')), float(format(landmark.y, '.5f')), float(format(landmark.z, '.5f')))]
+            flag = 1
+            print(standard)
     for index, landmark in enumerate(landmarks.landmark):
         landmark_point.append(
-            [landmark.visibility, (landmark.x, landmark.y, landmark.z)])
+            [landmark.visibility, (float(format(landmark.x, '.5f')), float(format(landmark.y, '.5f')), float(format(landmark.z, '.5f')))])
     face_index_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     right_arm_index_list = [11, 13, 15, 17, 19, 21]
     left_arm_index_list = [12, 14, 16, 18, 20, 22]
@@ -90,7 +100,6 @@ def plot_world_landmarks(
     waist_index_list = [23, 24]
     # 重心模拟
     center_of_mass = [11, 12, 25, 26]
-    knee = [26]
 
     # 面部
     face_x, face_y, face_z = [], [], []
@@ -173,15 +182,15 @@ def plot_world_landmarks(
     ax.invert_yaxis()
     # Mediapipe坐标和matplotlib y z轴相反，且z(mat)需×-1
     ax.scatter(face_x, face_y, face_z)
-    ax.scatter(0, 0, 0)
-    ax.scatter(COM_x, COM_y, 0)
+    # ax.scatter(0, 0, 0)
+    # ax.scatter(COM_x, COM_y, 0)
     ax.plot(right_arm_x, right_arm_y, right_arm_z)
     ax.plot(left_arm_x, left_arm_y, left_arm_z)
     ax.plot(right_body_side_x, right_body_side_y, right_body_side_z)
     ax.plot(left_body_side_x, left_body_side_y, left_body_side_z)
     ax.plot(shoulder_x, shoulder_y, shoulder_z)
     ax.plot(waist_x, waist_y, waist_z)
-    ax.scatter(landmark_point[26][1][0], landmark_point[26][1][2], landmark_point[26][1][1]*(-1))
+    # ax.scatter(landmark_point[26][1][0], landmark_point[26][1][2], landmark_point[26][1][1]*(-1))
     plt.pause(.001)
 
     return
@@ -200,7 +209,7 @@ def axisFilter(axis):
             fps_num.append(index)
             cal_V_list.append([axis[index-1], item, axis[index+1]])
             cal_V_list_shoulder.append([shoulder_axisZ[index-1], shoulder_axisZ[index], shoulder_axisZ[index+1]])
-    # print(cal_V_list_shoulder)#peaks_and_valleys, cal_V_list)
+    # print(cal_V_list)#peaks_and_valleys, cal_V_list)
     v_res = wattCalculate(cal_V_list, peaks_and_valleys)
     # v_res = wattCalculate(cal_V_list_shoulder, shoulder_list)
     fig = plt.figure()
@@ -227,7 +236,7 @@ def wattCalculate(v_list, axis_list):
     v_res = []
     for index, item in enumerate(v_list):
         v = abs(abs(item[2] - item[1])-abs(item[1] - item[0])) / (2 / fps)  #  7.05待定
-        print(v)
+        # print(v)
         v_res.append(v)
         # if index != len(v_list) - 1:
         #     trans_Vf += abs(math.pow(item[1], 2) - math.pow(v_list[index+1][1], 2))
@@ -243,7 +252,7 @@ def wattCalculate(v_list, axis_list):
     Ek = m * trans_Vf / 2
     # 总
     E = Ep + Ek
-    print(Ep, Ek, E, trans_H, trans_Vf)
+    # print(Ep, Ek, E, trans_H, trans_Vf, v_res)
     return v_res
     # W = 9.8 * sum(axis_list) + m * sum(np.square(v_linear)) / 2
 test()
